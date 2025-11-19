@@ -27,8 +27,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const file = formData.get('file');
   const fileName = formData.get('name')?.toString() || '';
 
-  const cliUpload = formData.get('cliUpload')?.toString() === 'true';
-  const cliRoute = formData.get('cliRoute')?.toString() || '';
 
   if (!file || !(file instanceof Blob)) {
 
@@ -44,7 +42,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const buffer = Buffer.from(await file.arrayBuffer());
   const uuid = uuidv4();
   const ext = path.extname(file.name).toLowerCase().replace('.', '');
-  const mimeType = mime.lookup(file.name) || '';
 
 
 
@@ -76,8 +73,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   // }
 
   const tempFilePath = path.join(tempPath, `${uuid}.${ext}`);
+
   fs.writeFileSync(tempFilePath, buffer);
+  
   const outputDir = path.join(dashDir, uuid);
+
   if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
   const outputManifestPath = path.join(outputDir, 'index.mpd');
