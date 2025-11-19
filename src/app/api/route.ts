@@ -23,7 +23,19 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
 
 
-  const formData = await req.formData();
+  const formData = await req.formData().catch(err => {
+    if (!err) return null
+  });
+
+  if (!formData) {
+    return new APIResponse({
+      body: {},
+      code: APICodes[400],
+      message: APIMessages.BadRequest,
+      status: APIStatus.BadRequest
+    }).response()
+  }
+  
   const file = formData.get('file');
   const fileName = formData.get('name')?.toString() || '';
 
@@ -75,7 +87,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const tempFilePath = path.join(tempPath, `${uuid}.${ext}`);
 
   fs.writeFileSync(tempFilePath, buffer);
-  
+
   const outputDir = path.join(dashDir, uuid);
 
   if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
