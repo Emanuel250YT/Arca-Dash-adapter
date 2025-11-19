@@ -46,7 +46,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const ext = path.extname(file.name).toLowerCase().replace('.', '');
   const mimeType = mime.lookup(file.name) || '';
 
-  const isVideo = mimeType.startsWith('video/') || mimeType.includes('mp4');
 
 
 
@@ -84,7 +83,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const outputManifestPath = path.join(outputDir, 'index.mpd');
 
   testRead(tempFilePath);
-  
+
   return new Promise((resolve) => {
     ffmpeg(tempFilePath)
       .outputOptions([
